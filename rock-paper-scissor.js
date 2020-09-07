@@ -100,7 +100,9 @@ let playGame = () => {
 // (useful when running this as a snippet)
 function clearPage() {
     let allDivs = document.getElementsByTagName('div')
-    allDivs.forEach(div => clearElement(div))
+    if (allDivs) {
+        allDivs.forEach(div => clearElement(div))
+    }
 }
 
 // clear all HTML content from a HTML element
