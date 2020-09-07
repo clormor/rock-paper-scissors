@@ -83,6 +83,7 @@ let rockPaperScissors = () => {
 
 // plays 5 rounds of rock, paper, scissors and returns an overaal result message
 let playGame = () => {
+    clearPage()
     let rounds = 5, playerScore = 0, computerScore = 0
     for (i = 0; i < rounds; i++) {
         let result = rockPaperScissors()
@@ -126,9 +127,4 @@ function displayOnPage(value) {
     }
     firstDiv.appendChild(para)
 }
-
-// clear the page first (useful if running as a snippet)
-clearPage()
-// play the game!
-playGame()
 
