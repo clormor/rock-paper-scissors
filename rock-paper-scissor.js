@@ -121,6 +121,9 @@ function displayInParagraph(value) {
 function displayOnPage(value) {
     let para = displayInParagraph(value)
     let firstDiv = document.querySelector('div')
+    if (!firstDiv) {
+        firstDiv = document.createElement('div')
+    }
     firstDiv.appendChild(para)
 }
 
