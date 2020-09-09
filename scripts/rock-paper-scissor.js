@@ -237,9 +237,9 @@ function updateScores(result) {
 // display a message to the console based on the result of a round
 function displayRoundResult(result, computerChoice) {
     let message = 'Computer chose ' +
-            computerChoice +
-            '... ' +
-            generateResultMessage(result)
+        computerChoice +
+        '... ' +
+        generateResultMessage(result)
     writeToConsole(message)
 }
 
