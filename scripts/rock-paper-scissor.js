@@ -51,15 +51,10 @@ function getConsole() {
     return consoleElements[0]
 }
 
-// create a new paragraph element
-function generateParagraph() {
-    return document.createElement('p')
-}
-
 // write a message to the console element
 function consoleMessage(message) {
     let console = getConsole()
-    let para = generateParagraph()
+    let para = document.createElement('p')
     generateMessageLabel(message, para)
     console.append(para)
 }
@@ -72,7 +67,7 @@ function generateNextPromptId() {
 // write a prompt to the console to let the user play the next round, and give it focus
 function roundPrompt(message, remainingRounds) {
     let console = getConsole()
-    let para = generateParagraph()
+    let para = document.createElement('p')
     let inputId = generateNextPromptId()
     generateMessagePrompt(message, para)
     generateRoundPrompt(para, inputId, remainingRounds)
@@ -83,7 +78,7 @@ function roundPrompt(message, remainingRounds) {
 // write a prompt to the console to give the user a yes/no choice
 function yesNoPrompt(message, onYes, onNo, onUnrecognised) {
     let console = getConsole()
-    let para = generateParagraph()
+    let para = document.createElement('p')
     let inputId = generateNextPromptId()
     generateMessagePrompt(message, para)
     generateYesNoPrompt(para, inputId, onYes, onNo, onUnrecognised)
@@ -94,8 +89,8 @@ function yesNoPrompt(message, onYes, onNo, onUnrecognised) {
 // create a label to store a console message, and add it to the given parent element
 function generateMessageLabel(message, parent) {
     let label = document.createElement('label')
-    label.setAttribute('class', 'console-label')
-    label.innerHTML=message
+    label.classList.add('console-label')
+    label.textContent=message
     parent.append(label)
 }
 
@@ -122,7 +117,7 @@ function generateRoundPrompt(parent, id, remainingRounds) {
 function generateYesNoPrompt(parent, id, onYes, onNo, onUnrecognised) {
     let input = document.createElement('input')
     input.setAttribute('type', 'text')
-    input.setAttribute('class', 'console-prompt')
+    input.classList.add('console-prompt')
     input.setAttribute('id', id)
 
     input.addEventListener("keyup", function(event) {
