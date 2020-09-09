@@ -165,15 +165,23 @@ let generatePromptMessage = (message) => generateMessage('> ' + message + ': ')
 
 // creates and returns an input prompt with associated functions that fire when a key is released
 function generatePromptInput(parent, ...onKeyUp) {
-    let caretChangedEvents = ['click', 'select', 'change', 'keydown', 'keyup']
+    // create the input and add appropriate style attributes
     let input = document.createElement('input')
     input.setAttribute('type', 'text')
     input.setAttribute('class', promptClass)
-    input.setAttribute('id', promptIdBase + ++currentPromptId)
     input.setAttribute('autocomplete', 'false')
     input.setAttribute('spellcheck', 'false')
+
+    // set this input to be the current input that will be read from next
+    input.setAttribute('id', promptIdBase + ++currentPromptId)
+
+    // fix the caret position to the end of the input (for a console look and feel)
+    let caretChangedEvents = ['click', 'select', 'change', 'keydown', 'keyup']
     caretChangedEvents.forEach(event => input.addEventListener(event, fixCaretPosition))
+
+    // add the provided function callbacks as event listeners
     onKeyUp.forEach(f => input.addEventListener('keyup', f))
+
     return input
 }
 
@@ -210,14 +218,14 @@ function parsePlayerChoice() {
 function playRound(playerChoice) {
     let computerChoice = computerTurn()
     let result = compareChoices(playerChoice, computerChoice)
-    scoreRound(result)
+    updateScores(result)
     displayRoundResult(result, computerChoice)
     roundsPlayed++
     promptPlayer()
 }
 
 // update the global score variables based on a round result
-function scoreRound(result) {
+function updateScores(result) {
     if (result > 0) {
         playerScore++
     }
