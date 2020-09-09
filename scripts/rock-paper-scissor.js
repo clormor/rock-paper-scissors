@@ -120,9 +120,9 @@ function generateYesNoPrompt(parent, id, onYes, onNo, onUnrecognised) {
     input.classList.add('console-prompt')
     input.setAttribute('id', id)
 
-    input.addEventListener("keyup", function(event) {
+    input.addEventListener('keyup', function(event) {
         // process the player's choice when they hit enter (to give a console feel)
-        if (event.keyCode === 13) {
+        if (event.key === 'Enter') {
             validateYesNo(input, onYes, onNo, onUnrecognised)
         }
     });
@@ -131,7 +131,6 @@ function generateYesNoPrompt(parent, id, onYes, onNo, onUnrecognised) {
 
 // disable an input so its read only (helps give the page a console-like look and feel)
 function disableInput(input) {
-    input.setAttribute('readonly', 'readony')
     input.setAttribute('disabled', 'disabled')
 }
 
