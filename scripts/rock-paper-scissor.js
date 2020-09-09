@@ -48,9 +48,7 @@ let compareChoices = (playerChoice, computerChoice) => {
  */
 function parseChoice(choice) {
     let result = possibleChoices.find(e => e === choice.trim().toLowerCase())
-    if (result) {
-        return result
-    }
+    return result
 }
 
 /**
