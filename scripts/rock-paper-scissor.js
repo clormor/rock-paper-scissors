@@ -47,8 +47,7 @@ let compareChoices = (playerChoice, computerChoice) => {
  * @returns The parsed choice (guaranteed to be strictly equal to 'rock', 'paper' or 'scissors') or undefined
  */
 function parseChoice(choice) {
-    let result = possibleChoices.find(e => e === choice.trim().toLowerCase())
-    return result
+    return possibleChoices.find(e => e === choice.trim().toLowerCase())
 }
 
 /**
