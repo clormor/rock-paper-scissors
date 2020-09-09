@@ -1,20 +1,25 @@
-// number of rounds in a game, and number of rounds remaining
+/** Number of rounds in a game*/
 const roundsPerGame = 5
+/** Number of rounds played so far */
 let roundsPlayed = 0
-// track the id of the current input prompt
+/** Counter to hold the id of the currently active input prompt */
 let currentPromptId = 0
-// track each players score
+/** Track each player's score */
 let playerScore = 0, computerScore = 0
 
+/** Base ID string. Combined with ${currentPromptId} to create a CSS id */
 const promptIdBase = 'console-input-'
+/** CSS class for input prompts, to give a console look and feel */
 const promptClass = 'console-prompt'
+/** Possible choices in the game */
 const possibleChoices = ['rock', 'paper', 'scissors']
 
-// compares two choices of rock paper scissors
-// returns:
-//     0 if the choice1 and choice2 are equal
-//     > 0 if choice1 beats choice2
-//     < 0 if choice1 is defeated by choice2
+/**
+ * Compare two choices in a game rock paper scissors
+ * @param {*} choice1 The player's choice
+ * @param {*} choice2 The computer's choice
+ * @returns >0 if choice1 is the winner, <0 if choice2 is the winner, 0 if it's a tie
+ */
 let compareChoices = (choice1, choice2) => {
     choice1 = parseChoice(choice1)
     choice2 = parseChoice(choice2)
@@ -36,8 +41,11 @@ let compareChoices = (choice1, choice2) => {
     }
 }
 
-// attempts to validate the given choice and returns the corresponding matched choice
-// returns undefined if the choice is not valid (e.g. the player made a typo)
+/**
+ * Parse a choice to ensure that it is valid (e.g. 'rock', 'paper', 'scissors' or an acceptable variant)
+ * @param {Pa} choice The choice to parse
+ * @returns The parsed choice (guaranteed to be strictly equal to 'rock', 'paper' or 'scissors') or undefined
+ */
 function parseChoice(choice) {
     let result = possibleChoices.find(e => e === choice.trim().toLowerCase())
     if (result) {
@@ -45,16 +53,20 @@ function parseChoice(choice) {
     }
 }
 
-// returns a valid array index of an array, at random
-let randomIndex = array => Math.floor(Math.random() * array.length)
+/**
+ * Initiate a computer's turn at rock paper scissors
+ * @returns The randomised choice made by the computer
+ */
+function computerTurn() {
+    let randomIndex = Math.floor(Math.random() * possibleChoices.length)
+    let randomSelection = possibleChoices[randomIndex]
+    return randomSelection
+}
 
-// returns an array element from an array, at random
-let randomSelection = array => array[randomIndex(array)]
-
-// represents a computer's turn at rock paper scissors by making a random choice
-let computerTurn = () => randomSelection(possibleChoices)
-
-// returns the console element on the current page - expects there to be exactly one of these
+/**
+ * Get the console (this is the section of the page which is designed to mimick a command-line terminal)
+ * @returns The console element on the current page - there should be exactly one of these
+ */
 function getConsole() {
     let consoleElements = document.getElementsByClassName('console')
     if (consoleElements.length != 1) {
@@ -64,35 +76,50 @@ function getConsole() {
     return consoleElements[0]
 }
 
-// write a message to the console
+/**
+ * Write a message to the console
+ * @param {*} message The message to display on the console
+ */
 function writeToConsole(message) {
     let para = document.createElement('p')
     para.append(generateMessage(message))
     getConsole().append(para)
 }
 
-// gets the currently active prompt
+/**
+ * @returns The currently active input element (there should only ever be one that we care about)
+ */
 function getCurrentPrompt() {
     return document.getElementById(promptIdBase + currentPromptId)
 }
 
-// prompt the player with the appropriate next action
+/**
+ * Prompt the user with the next appropriate action. This could be to;
+ * # Make their turn in a game, if not all rounds have been completed
+ * # Decide whether or not to play a new game or quit
+ */
 function promptPlayer() {
     if (roundsPlayed >= roundsPerGame) {
-        displayOverallResult()
+        writeOverallResult()
         promptPlayAgain()
     } else {
         playerTurn()
     }
 }
 
-// gives the player the opportunity to play a turn of rock paper scissors
+/**
+ * Prompt the player to take their turn in a game of rock paper scissors
+ */
 function playerTurn() {
     let message = 'Round ' + (roundsPlayed + 1) + '. Enter choice [rock/paper/scissors]'
     promptUser(message, parsePlayerChoiceOnEnter)
 }
 
-// prompt the user to type an input, using the given functions to process the input's key presses
+/**
+ * Add a new user prompt to the console
+ * @param {*} message The message to display before the input
+ * @param  {...any} onKeyUp The function(s) to execute on 'keyup' events on the input
+ */
 function promptUser(message, ...onKeyUp) {
     // create a container for the message + input prompt
     let para = document.createElement('p')
@@ -110,30 +137,44 @@ function promptUser(message, ...onKeyUp) {
     document.getElementById(inputId).focus()
 }
 
-// perform a given function after a fired event if the event was triggered by the enter key
+/**
+ * Perform an action only after the user presses Enter
+ * @param {*} event The event that fired
+ * @param {*} onEnter The function to execute if the event was triggered by the Enter key
+ */
 function performOnEnter(event, onEnter) {
     if (event.key === 'Enter') {
         onEnter()
     }
 }
 
-// process a player's rock/paper/scissors choice if they pressed the enter key
+/**
+ * Function callback to parse the player's choice when they press Enter
+ * @param {*} event The event that fired
+ */
 function parsePlayerChoiceOnEnter(event) {
     performOnEnter(event, parsePlayerChoice)
 }
 
-// process the player's decision to restart the game if they pressed the enter key
+/**
+ * Function callback to decide whether or not to restart the game when the user presses Enter
+ * @param {*} event The event that fired
+ */
 function parseRestartOnEnter(event) {
     performOnEnter(event, parseRestart)
 }
 
-// function callback to parse a yes or no response and determine whether to restart the game
+/**
+ * Process a yes / no response and decide whether to start a new game or quit
+ */
 let parseRestart = () => parseYesOrNo(startGame, endGame, promptPlayAgain)
 
-// process a yes / no response, decide how to proceed
-//     onYes : function to execute if the response is parsed as 'yes'
-//     onNo : function to execute if the response is parsed as 'no'
-//     onUnrecognised : function to execute if the response cannot be parsed correctly
+/**
+ * Process a yes / no response and decide how to proceed
+ * @param {*} onYes Executed if the response is parsed as 'yes'
+ * @param {*} onNo Executed if the response is parsed as 'no'
+ * @param {*} onUnrecognised Executed if the response cannot be parsed
+ */
 function parseYesOrNo(onYes, onNo, onUnrecognised) {
     let playerChoice = readCurrentPrompt()
     if (playerChoice === 'y' || playerChoice == 'yes') {
@@ -148,22 +189,33 @@ function parseYesOrNo(onYes, onNo, onUnrecognised) {
     onUnrecognised()
 }
 
-// ask the user if they'd like to play again
+/**
+ * Prompts the to see if they'd like to play another game
+ */
 function promptPlayAgain() {
     promptUser('Would you like to play again? [yes/no]', parseRestartOnEnter)
 }
 
-// create a label to store a console message, and add it to the given parent element
+/**
+ * Create a label to store a console message, and add it to the given parent element
+ * @returns The newly-created label element
+ */
 function generateMessage(message) {
     let label = document.createElement('label')
     label.textContent=message
     return label
 }
 
-// create a label to store a console prompt, and add it to the given parent element
+/**
+ * Create a label to store a console prompt, and add it to the given parent element
+ * @returns The newly-created label element
+ */
 let generatePromptMessage = (message) => generateMessage('> ' + message + ': ')
 
-// creates and returns an input prompt with associated functions that fire when a key is released
+/**
+ * Create an input prompt with associated functions that fire when a key is released
+ * @returns The newly-created input element
+ */
 function generatePromptInput(parent, ...onKeyUp) {
     // create the input and add appropriate style attributes
     let input = document.createElement('input')
@@ -185,7 +237,9 @@ function generatePromptInput(parent, ...onKeyUp) {
     return input
 }
 
-// ensure the caret position is fixed to the end of the input
+/**
+ * Fix the caret position to the end of the input
+ */
 function fixCaretPosition() {
     this.focus()
     let setCaretPosition = this.value.length
@@ -193,7 +247,9 @@ function fixCaretPosition() {
     this.selectionEnd = setCaretPosition
 }
 
-// get the contents of the current input prompt
+/**
+ * Get the contents of the current input prompt
+ */
 function readCurrentPrompt() {
     let currentPrompt = getCurrentPrompt()
     // disable the input from future edits
@@ -202,29 +258,38 @@ function readCurrentPrompt() {
     return currentPrompt.value.trim().toLowerCase()
 }
 
-// process the player's choice and decide how to proceed
+/**
+ * Process the player's choice and decide how to proceed 
+ */
 function parsePlayerChoice() {
     let playerChoice = readCurrentPrompt()
     playerChoice = parseChoice(playerChoice)
     if (playerChoice) {
+        // if the choice was vald, play out the round
         playRound(playerChoice)
     } else {
+        // if the choice was invalid, alert the user and re-prompt
         writeToConsole('Unrecgonised Input.')
         promptPlayer()
     }
 }
 
-// given a valid player choice, play out a round of rock paper scissors
+/**
+ * Given a valid player choice, play a round of rock paper scissors against the computer
+ */
 function playRound(playerChoice) {
     let computerChoice = computerTurn()
     let result = compareChoices(playerChoice, computerChoice)
     updateScores(result)
-    displayRoundResult(result, computerChoice)
+    writeResultOfRound(result, computerChoice)
     roundsPlayed++
     promptPlayer()
 }
 
-// update the global score variables based on a round result
+/**
+ * Update the global score variables based on a round result
+ * @param {*} result The result of a round
+ */
 function updateScores(result) {
     if (result > 0) {
         playerScore++
@@ -234,8 +299,10 @@ function updateScores(result) {
     }
 }
 
-// display a message to the console based on the result of a round
-function displayRoundResult(result, computerChoice) {
+/**
+ * Display a message to the console based on the result of a round
+ */
+function writeResultOfRound(result, computerChoice) {
     let message = 'Computer chose ' +
         computerChoice +
         '... ' +
@@ -243,10 +310,12 @@ function displayRoundResult(result, computerChoice) {
     writeToConsole(message)
 }
 
-// return a win, lose or draw message based on a result. If the result is:
-//     0   : this is considered a tie
-//     < 0 : this is considered a defeat
-//     > 0 : this is considered a victory
+/**
+ * Construct a string to congratulate or console a user based on a given result
+ * Assumes the user has won if the result is >0, and lost if the result is <0.
+ * @param {*} result The result of either a round or an overall result of several rounds
+ * @returns An appropriate message in the form of a string
+ */
 function generateResultMessage(result) {
     if (result == 0) {
         return 'It\'s a tie!'
@@ -259,17 +328,24 @@ function generateResultMessage(result) {
     }
 }
 
-// display an overall result message in the console, scoring all rounds of the game
-function displayOverallResult() {
+/**
+ * Display an overall result message in the console, scoring all rounds of the game
+ */
+function writeOverallResult() {
     writeToConsole('The results are in... ' + generateOverallResultMessage())
 }
 
-// return a message based on the overall aggregate score of all rounds
+/**
+ * Generate a message based on the overall aggregate score of all rounds
+ * @returns An appropriate message in the form of a string
+ */
 function generateOverallResultMessage() {
     return generateResultMessage(playerScore - computerScore)
 }
 
-// start a game of rock paper scissors
+/**
+ * Starts a new game of rock paper scissors
+ */
 function startGame() {
     writeToConsole('Let\'s play a game of rock paper scissors! Best of ' + roundsPerGame + '...')
     playerScore = 0
@@ -278,7 +354,9 @@ function startGame() {
     promptPlayer()
 }
 
+/**
+ * Ends the game
+ */
 function endGame() {
     writeToConsole('Thank you for playing!')
 }
-
